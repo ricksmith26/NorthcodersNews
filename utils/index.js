@@ -9,6 +9,15 @@ const DB_URL = require('../config/index');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
+const createUserOb = usersDocs => {
+  console.log(usersDocs, '<<<<<<<<HERE');
+  return usersDocs.reduce(function(acc, val) {
+    console.log(val.name, val._id, '<<<<VAL');
+    acc[val.name] = val._id;
+    return acc;
+  }, {});
+};
+
 const changeArticleTopicId = (articleData, topicDocs) => {
   let result = [];
   for (let i = 0; i < articleData.length; i++) {
@@ -17,7 +26,7 @@ const changeArticleTopicId = (articleData, topicDocs) => {
         const art = {
           title: articleData[i].title,
           topic: topicDocs[j].id,
-          created_by: articleData[i].title,
+          created_by: 'new id here',
           body: articleData[i].body
         };
 
@@ -28,4 +37,4 @@ const changeArticleTopicId = (articleData, topicDocs) => {
   return result;
 };
 
-module.exports = changeArticleTopicId;
+module.exports = { changeArticleTopicId, createUserOb };
