@@ -9,23 +9,23 @@ const DB_URL = require('../config/index');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-mongoose.connect('mongodb://localhost:27017/northcoder_news').then(() => {
-  seedDB(topicData, usersData);
-});
-
-const changeArticeTopicId = (articleData, topicDocs) => {
+const changeArticleTopicId = (articleData, topicDocs) => {
   let result = [];
   for (let i = 0; i < articleData.length; i++) {
     for (let j = 0; j < topicDocs.length; j++) {
       if (articleData[i].topic === topicDocs[j].slug) {
-        articleData[i].topic = topicDocs[j].slug;
-        result.push(articleData[i]);
+        const art = {
+          title: articleData[i].title,
+          topic: topicDocs[j].id,
+          created_by: articleData[i].title,
+          body: articleData[i].body
+        };
+
+        result.push(art);
       }
     }
   }
   return result;
 };
 
-seedDB(topicData, articleData);
-
-module.exports = { changeArticeTopicId };
+module.exports = changeArticleTopicId;
