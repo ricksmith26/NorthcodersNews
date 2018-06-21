@@ -14,5 +14,12 @@ const getTopics = (req, res, next) => {
     })
     .catch(next);
 };
+// I have writte mth below but have not written an api or test
+// const getArticleByTopicId = (req, res, next) => {
+//   const { topic } = req.params;
+//   Article.find(topic).then(articles => {
+//     res.status(200).send({ articles });
+//   });
+// };
 
-module.exports = { getEndPoints, getTopics };
+module.exports = { getEndPoints, getTopics, getArticleByTopicId };
