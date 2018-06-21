@@ -13,7 +13,7 @@ const {
   createArticleOb
 } = require('../utils/index');
 
-const seedDB = (topicData, articleData, commentData, usersData) => {
+const seedDB = ({ topicData, articleData, commentData, usersData }) => {
   let articleDocs;
   return (
     mongoose.connection
@@ -42,22 +42,14 @@ const seedDB = (topicData, articleData, commentData, usersData) => {
       })
 
       .then(([articleDocs, topicDocs, userDocs, userRef]) => {
-        const articleIdOb = createArticleOb(articleDocs);
-        // console.log(
-        //   articleDocs,
-        //   '<<<<<<<<<<<<<<ARTICLE>>>>>>>>>.....',
-        //   commentData,
-        //   '**NEXTUSERDOCS***',
-        //   userRef,
-        //   '<<<USERDOCS COMMENTDATA'
-        // );
-
-        return Comment.insertMany(
-          changeCommentId(userRef, commentData, articleDocs)
-        );
+        return Promise.all([
+          articleDocs,
+          topicDocs,
+          userDocs,
+          Comment.insertMany(changeCommentId(userRef, commentData, articleDocs))
+        ]);
       })
 
-      .then(console.log)
       .catch(console.log)
   );
 };
