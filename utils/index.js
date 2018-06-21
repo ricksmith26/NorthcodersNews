@@ -54,10 +54,6 @@ const changeCommentId = (userRef, commentData, articleDocs) => {
   let result = [];
   // console.log(commentData, '<<<<<<<<<<<<<<<<<<<<<<<<overhere');
   for (let i = 0; i < commentData.length; i++) {
-    console.log(
-      commentData[i].belongs_to,
-      '<<<<<<<<<<<<<<<<<<<<<<<???????????'
-    );
     const com = {
       body: commentData[i].body,
       belongs_to: createArticleOb(articleDocs)[commentData[i].belongs_to],
@@ -68,7 +64,7 @@ const changeCommentId = (userRef, commentData, articleDocs) => {
 
     result.push(com);
   }
-  console.log(result, 'chanegComment');
+  // console.log(result, 'chanegComment');
   return result;
 };
 
