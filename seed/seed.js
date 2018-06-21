@@ -6,14 +6,20 @@ const {
   topicData,
   usersData
 } = require('./testData/index');
-const { changeArticleTopicId, createUserOb } = require('../utils/index');
+const {
+  changeArticleTopicId,
+  createUserOb,
+  changeCommentId,
+  createArticleOb
+} = require('../utils/index');
 
-const seedDB = (articleData, commentData, topicData, usersData) => {
-  console.log(topicData, '<<<<<<<<<<<<topicData');
+const seedDB = (topicData, articleData, commentData, usersData) => {
+  let articleDocs;
   return (
     mongoose.connection
       .dropDatabase()
       .then(() => {
+        // console.log(topicData, '<<<<<<<<<<<<topicData');
         console.log('b4 insert');
         return Promise.all([
           Topic.insertMany(topicData),
@@ -23,12 +29,32 @@ const seedDB = (articleData, commentData, topicData, usersData) => {
       ///the below was working before I added the create userOb with console
       //log but won't allow as a parameter
       .then(([topicDocs, userDocs]) => {
-        console.log(userDocs, '<<<<@@@@');
-        console.log(topicDocs, '<<<<@@@@TOPICDOC');
+        const userRef = createUserOb(userDocs);
+        // console.log(userRef, '+++++++++++=');
         return Promise.all([
-          createUserOb(usersDocs),
-          changeArticleTopicId(articleData, topicDocs)
+          Article.insertMany(
+            changeArticleTopicId(topicDocs, articleData, userRef)
+          ),
+          topicDocs,
+          userDocs,
+          userRef
         ]);
+      })
+
+      .then(([articleDocs, topicDocs, userDocs, userRef]) => {
+        const articleIdOb = createArticleOb(articleDocs);
+        // console.log(
+        //   articleDocs,
+        //   '<<<<<<<<<<<<<<ARTICLE>>>>>>>>>.....',
+        //   commentData,
+        //   '**NEXTUSERDOCS***',
+        //   userRef,
+        //   '<<<USERDOCS COMMENTDATA'
+        // );
+
+        return Comment.insertMany(
+          changeCommentId(userRef, commentData, articleDocs)
+        );
       })
 
       .then(console.log)

@@ -13,7 +13,7 @@ mongoose
   .connect(DB_URL)
   .then(() => {
     console.log('b4 run seed');
-    return seedDB(articleData, commentData, topicData, usersData);
+    return seedDB(topicData, articleData, commentData, usersData);
   })
   .then(() => {
     return mongoose.disconnect();
