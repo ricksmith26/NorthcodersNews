@@ -17,7 +17,7 @@ app.get('/', (req, res, next) => {
 
 app.use('/api', apiRouter);
 
-app.use('/*', () => {
+app.use('/*', (req, res) => {
   res.status(404).send({ err: 'page not found' });
 });
 

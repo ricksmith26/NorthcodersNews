@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 //const rawData = require('./devData');
 const { DB_URL } = require('../config');
 const rawData = require('./testData/index');
-
+console.log(DB_URL);
 mongoose
   .connect(DB_URL)
   .then(() => {

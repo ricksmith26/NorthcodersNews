@@ -14,12 +14,34 @@ const getTopics = (req, res, next) => {
     })
     .catch(next);
 };
-// I have writte mth below but have not written an api or test
-// const getArticleByTopicId = (req, res, next) => {
+
+// const getArticleByTopic = (req, res, next) => {
+//   console.log(req.params, '<<<<<<<<<<<<<<<<<');
 //   const { topic } = req.params;
-//   Article.find(topic).then(articles => {
-//     res.status(200).send({ articles });
-//   });
+//   Article.find(topic)
+//     .then(articles => {
+//       res.status(200).send({ articles });
+//     })
+//     .catch(next);
 // };
 
-module.exports = { getEndPoints, getTopics, getArticleByTopicId };
+const getArticlesByTopic = (req, res, next) => {
+  const { topic_name } = req.params;
+  Article.find({ belongs_to: topic_name })
+    .lean()
+    .populate('created_by', 'username')
+    .then(articleDocs => {
+      return Promise.all(formatArticlesForClient(articleDocs));
+    })
+    .then(articles => {
+      if (articles.length === 0)
+        return next({
+          status: 404,
+          msg: 'articles not found: invalid topic name.'
+        });
+      res.send({ articles });
+    })
+    .catch(next);
+};
+
+module.exports = { getEndPoints, getTopics, getArticlesByTopic };
