@@ -38,6 +38,7 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
     }
   }
   // console.log(result, 'changeArticle');
+  console.log(result);
   return result;
 };
 const createArticleOb = articleData => {
