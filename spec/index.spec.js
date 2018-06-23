@@ -143,6 +143,19 @@ describe.only('/northcoders-news', () => {
                     );
                   });
               });
+              describe('/', () => {
+                it('PUT Increment or Decrement the votes of an article by one', () => {
+                  return request
+                    .put(`/api/articles/${articleDocs[0]._id}`)
+                    .send({
+                      vote: 'up'
+                    })
+                    .expect(201)
+                    .then(res => {
+                      expect(res.body.articles[0]).to.equal(2);
+                    });
+                });
+              });
             });
           });
         });
