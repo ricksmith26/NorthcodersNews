@@ -5,6 +5,8 @@ const getEndPoints = (req, res, next) => {
   res.send(result);
 };
 
+//GET /api/topics Get all the topics
+
 const getTopics = (req, res, next) => {
   Topic.find()
     .then(topics => {
@@ -12,6 +14,7 @@ const getTopics = (req, res, next) => {
     })
     .catch(next);
 };
+//GET /api/topics/:topic/articles Return all the articles for a certain topic
 
 const getArticleByTopic = (req, res, next) => {
   const { topic_name } = req.params;
@@ -27,6 +30,8 @@ const getArticleByTopic = (req, res, next) => {
     })
     .catch(next);
 };
+
+//GET /api/articles Return all the articles
 
 const getArticles = (req, res, next) => {
   Promise.all([Comment.find(), User.find(), Article.find().lean()])
@@ -58,6 +63,8 @@ const getArticles = (req, res, next) => {
     .catch(next);
 };
 
+//GET /api/articles/:article_id/comments Get all the comments for a individual article
+
 const getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
 
@@ -68,6 +75,8 @@ const getCommentsByArticleId = (req, res, next) => {
     })
     .catch(next);
 };
+
+// POST / api / articles /: article_id / comments Add a new comment to an article.This route requires a JSON body with a comment key and value pair e.g: { "comment": "This is my new comment" }
 
 const addComment = (req, res, next) => {
   const { article_id } = req.params;
@@ -95,6 +104,8 @@ const addComment = (req, res, next) => {
     .catch(next);
 };
 
+// PUT / api / articles /: article_id Increment or Decrement the votes of an article by one.This route requires a vote query of 'up' or 'down' e.g: https://nc-news-portfolio.herokuapp.com/api/articles/:article_id?vote=up
+
 const voteUpOrDown = (req, res, next) => {
   const { article_id } = req.params;
   const { vote } = req.body;
@@ -116,6 +127,8 @@ const voteUpOrDown = (req, res, next) => {
     .catch(next);
 };
 
+//I added this so i could easily get the comments id's
+
 const getComments = (req, res, next) => {
   Comment.find()
     .then(comment => {
@@ -123,6 +136,8 @@ const getComments = (req, res, next) => {
     })
     .catch(next);
 };
+
+// PUT / api / comments /: comment_id Increment or Decrement the votes of a comment by one.This route requires a vote query of 'up' or 'down' e.g: https://nc-news-portfolio.herokuapp.com/api/comments/:comment_id?vote=down
 
 const voteComment = (req, res, next) => {
   console.log('hit function');
@@ -150,6 +165,8 @@ const voteComment = (req, res, next) => {
     .catch(next);
 };
 
+// DELETE / api / comments /: comment_id Deletes a comment if the comment was created by the Northcoder user
+
 const deleteComment = (req, res, next) => {
   const { comment_id } = req.params;
   Comment.findByIdAndRemove({
@@ -157,6 +174,17 @@ const deleteComment = (req, res, next) => {
   })
     .then(deleted => {
       res.status(201).send(deleted);
+    })
+    .catch(next);
+};
+
+// GET / api / users /: username Returns a JSON object with the profile data for the specified user.
+
+const getUserProfile = (req, res, next) => {
+  const { username } = req.params;
+  User.find({ username: username })
+    .then(user => {
+      res.send(user);
     })
     .catch(next);
 };
@@ -171,5 +199,6 @@ module.exports = {
   voteUpOrDown,
   voteComment,
   getComments,
-  deleteComment
+  deleteComment,
+  getUserProfile
 };

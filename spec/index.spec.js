@@ -132,10 +132,6 @@ describe.only('/northcoders-news', () => {
                   })
                   .expect(201)
                   .then(res => {
-                    console.log(
-                      articleDocs[0],
-                      '<<<<<<<<<<<<<<<<<<<<<<<<res.body'
-                    );
                     expect(res.body.comment).to.include.keys(
                       '_id',
                       'belongs_to',
