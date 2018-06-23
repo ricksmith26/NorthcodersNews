@@ -152,7 +152,7 @@ describe.only('/northcoders-news', () => {
                     })
                     .expect(201)
                     .then(res => {
-                      expect(res.body.articles[0]).to.equal(2);
+                      expect(res.body.articles[0]).to.equal(1);
                     });
                 });
               });

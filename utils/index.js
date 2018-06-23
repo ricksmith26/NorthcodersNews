@@ -30,9 +30,9 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
           title: articleData[i].title,
           body: articleData[i].body,
           topic: topicDocs[j].id,
+          created_by: userRef[articleData[i].created_by].id,
           belongs_to: topicDocs[j].slug,
-          votes: articleData[i].votes,
-          created_by: userRef[articleData[i].created_by].id
+          votes: articleData[i].votes
         };
         // console.log(art, 'here???????????????<<<<<<<<<<<<<<<<<<<<<<');
         result.push(art);
