@@ -15,43 +15,40 @@ const {
 
 const seedDB = ({ topicData, articleData, commentData, usersData }) => {
   let articleDocs;
-  return (
-    mongoose.connection
-      .dropDatabase()
-      .then(() => {
-        // console.log(topicData, '<<<<<<<<<<<<topicData');
-        console.log('b4 insert');
-        return Promise.all([
-          Topic.insertMany(topicData),
-          User.insertMany(usersData)
-        ]);
-      })
-      ///the below was working before I added the create userOb with console
-      //log but won't allow as a parameter
-      .then(([topicDocs, userDocs]) => {
-        const userRef = createUserOb(userDocs);
-        // console.log(userRef, '+++++++++++=');
-        return Promise.all([
-          Article.insertMany(
-            changeArticleTopicId(topicDocs, articleData, userRef)
-          ),
-          topicDocs,
-          userDocs,
-          userRef
-        ]);
-      })
+  return mongoose.connection
+    .dropDatabase()
+    .then(() => {
+      // console.log(topicData, '<<<<<<<<<<<<topicData');
+      console.log('b4 insert');
+      return Promise.all([
+        Topic.insertMany(topicData),
+        User.insertMany(usersData)
+      ]);
+    })
 
-      .then(([articleDocs, topicDocs, userDocs, userRef]) => {
-        return Promise.all([
-          articleDocs,
-          topicDocs,
-          userDocs,
-          Comment.insertMany(changeCommentId(userRef, commentData, articleDocs))
-        ]);
-      })
+    .then(([topicDocs, userDocs]) => {
+      const userRef = createUserOb(userDocs);
+      // console.log(userRef, '+++++++++++=');
+      return Promise.all([
+        Article.insertMany(
+          changeArticleTopicId(topicDocs, articleData, userRef)
+        ),
+        topicDocs,
+        userDocs,
+        userRef
+      ]);
+    })
 
-      .catch(console.log)
-  );
+    .then(([articleDocs, topicDocs, userDocs, userRef]) => {
+      return Promise.all([
+        articleDocs,
+        topicDocs,
+        userDocs,
+        Comment.insertMany(changeCommentId(userRef, commentData, articleDocs))
+      ]);
+    })
+
+    .catch(console.log);
 };
 
 module.exports = seedDB;

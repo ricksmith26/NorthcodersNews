@@ -24,12 +24,14 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
   for (let i = 0; i < articleData.length; i++) {
     for (let j = 0; j < topicDocs.length; j++) {
       if (articleData[i].topic === topicDocs[j].slug) {
-        // console.log(articleData[i], '<><><><>><>><>><><><>');
+        console.log(articleData, '<<<<<<<<<<<<<HERE');
+
         const art = {
           title: articleData[i].title,
           body: articleData[i].body,
           topic: topicDocs[j].id,
-          belongs_to: topicDocs[j].slug, // votes: articleData[i].votes,
+          belongs_to: topicDocs[j].slug,
+          votes: articleData[i].votes,
           created_by: userRef[articleData[i].created_by].id
         };
         // console.log(art, 'here???????????????<<<<<<<<<<<<<<<<<<<<<<');

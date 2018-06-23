@@ -22,16 +22,38 @@ const getArticleByTopic = (req, res, next) => {
           status: 404,
           msg: 'articles not found: invalid topic name.'
         });
-      console.log(articles, '<<<<<<<<<<<<');
+      console.log(articles, '<<<<<<<<<<<<thisOne');
       res.send({ articles });
     })
     .catch(next);
 };
 
 const getArticles = (req, res, next) => {
-  Article.find()
-    .then(articles => {
-      res.send({ articles });
+  Promise.all([Comment.find(), User.find(), Article.find().lean()])
+    .then(([comments, users, articles]) => {
+      const commentCount = comments.reduce((acc, val) => {
+        if (acc[val.belongs_to] !== undefined) {
+          acc[val.belongs_to]++;
+        } else {
+          acc[val.belongs_to] = 1;
+        }
+        return acc;
+      }, {});
+
+      const userOb = users.reduce(function(acc, val) {
+        if (acc[val.id] === undefined) {
+          acc[val.id] = val.username;
+          return acc;
+        }
+      }, {});
+      const Finalresult = articles.map(article => {
+        return {
+          ...article,
+          comments: commentCount[article._id],
+          created_by: userOb[article.created_by]
+        };
+      });
+      res.status(200).send({ articles: Finalresult });
     })
     .catch(next);
 };
@@ -111,15 +133,18 @@ const voteComment = (req, res, next) => {
       status: 200,
       message: 'Query error! Vote must be up or down'
     });
-  let voter;
-  vote === 'up' ? (voter = 1) : (voter = -1);
+  let voteReq = 0;
+  if (vote === 'up') {
+    voteReq++;
+  } else {
+    voteReq--;
+  }
   Comment.findByIdAndUpdate(
     comment_id,
-    { $inc: { votes: voter } },
+    { $inc: { votes: voteReq } },
     { new: true }
   )
     .then(voted => {
-      console.log(voted, comment_id);
       res.status(201).send({ voted });
     })
     .catch(next);
