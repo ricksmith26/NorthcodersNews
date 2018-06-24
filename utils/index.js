@@ -3,16 +3,14 @@ const {
   commentData,
   topicData,
   usersData
-} = require('../seed/testData/index');
+} = require('../seed/devData/index');
 const seedDB = require('../seed/seed');
 const DB_URL = require('../config/index');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 const createUserOb = usersDocs => {
-  // console.log(usersDocs, '<<<<<<<<HERE');
   return usersDocs.reduce(function(acc, val) {
-    // console.log(val.name, val._id, '<<<<VAL');
     acc[val.username] = { id: val._id, name: val.name };
     return acc;
   }, {});
@@ -41,14 +39,12 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
   return result;
 };
 const createArticleOb = articleData => {
-  //CREATE THIS
   return articleData.reduce(function(acc, val) {
     acc[val.title] = val.id;
     return acc;
   }, {});
 };
 
-//need to create a article title look up
 const changeCommentId = (userRef, commentData, articleDocs) => {
   let result = [];
 

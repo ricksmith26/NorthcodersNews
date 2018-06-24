@@ -126,13 +126,8 @@ describe('/northcoders-news', () => {
                   })
                   .expect(201)
                   .then(res => {
-                    expect(res.body.comments).to.include.keys(
-                      '_id',
-                      'belongs_to',
-                      'votes',
-                      'body'
-                    );
-                    expect(res.body.comments.body).to.equal(
+                    expect(res.body).to.include.keys('comment');
+                    expect(res.body.comment.body).to.equal(
                       'This is the new comment test'
                     );
                   });
@@ -202,7 +197,7 @@ describe('/northcoders-news', () => {
     });
   });
 });
-describe.only('/northcoders-news', () => {
+describe('/northcoders-news', () => {
   let articleDocs;
   let commentDocs;
   let topicDocs;
@@ -224,8 +219,7 @@ describe.only('/northcoders-news', () => {
               '_id',
               'username',
               'name',
-              'avatar_url',
-              '_v'
+              'avatar_url'
             );
           });
       });

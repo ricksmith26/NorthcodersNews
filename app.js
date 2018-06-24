@@ -11,9 +11,7 @@ mongoose.connect(DB_URL).then(() => {
 
 app.use(bodyParser.json());
 
-app.get('/', (req, res, next) => {
-  res.send({ msg: 'welcome...' });
-});
+app.set('view engine', 'ejs');
 
 app.use('/api', apiRouter);
 

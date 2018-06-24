@@ -5,7 +5,7 @@ const {
   commentData,
   topicData,
   usersData
-} = require('./testData/index');
+} = require('./devData/index');
 const {
   changeArticleTopicId,
   createUserOb,

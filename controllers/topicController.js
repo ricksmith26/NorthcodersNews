@@ -2,6 +2,7 @@ const { Topic, Article, User, Comment } = require('../models');
 
 const getEndPoints = (req, res, next) => {
   const result = { status: 'ok' };
+  // res.render('pages/apiList');
   res.send(result);
 };
 
