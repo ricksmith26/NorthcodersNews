@@ -24,8 +24,6 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
   for (let i = 0; i < articleData.length; i++) {
     for (let j = 0; j < topicDocs.length; j++) {
       if (articleData[i].topic === topicDocs[j].slug) {
-        console.log(articleData, '<<<<<<<<<<<<<HERE');
-
         const art = {
           title: articleData[i].title,
           body: articleData[i].body,
@@ -34,17 +32,15 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
           belongs_to: topicDocs[j].slug,
           votes: articleData[i].votes
         };
-        // console.log(art, 'here???????????????<<<<<<<<<<<<<<<<<<<<<<');
+
         result.push(art);
       }
     }
   }
-  // console.log(result, 'changeArticle');
-  console.log(result);
+
   return result;
 };
 const createArticleOb = articleData => {
-  console.log(articleData);
   //CREATE THIS
   return articleData.reduce(function(acc, val) {
     acc[val.title] = val.id;
@@ -55,7 +51,7 @@ const createArticleOb = articleData => {
 //need to create a article title look up
 const changeCommentId = (userRef, commentData, articleDocs) => {
   let result = [];
-  // console.log(commentData, '<<<<<<<<<<<<<<<<<<<<<<<<overhere');
+
   for (let i = 0; i < commentData.length; i++) {
     const com = {
       body: commentData[i].body,
@@ -67,7 +63,7 @@ const changeCommentId = (userRef, commentData, articleDocs) => {
 
     result.push(com);
   }
-  // console.log(result, 'chanegComment');
+
   return result;
 };
 

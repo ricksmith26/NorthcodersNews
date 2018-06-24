@@ -111,12 +111,12 @@ const voteUpOrDown = (req, res, next) => {
       status: 200,
       message: 'Query error! Vote must be either up or down'
     });
+
   let voteReq;
-  let voteReq = 0;
   if (vote === 'up') {
-    voteReq++;
+    voteReq = 1;
   } else {
-    voteReq--;
+    voteReq = -1;
   }
   Article.findByIdAndUpdate(
     article_id,
@@ -133,16 +133,16 @@ const voteUpOrDown = (req, res, next) => {
 
 const getComments = (req, res, next) => {
   Comment.find()
-    .then(comment => {
-      res.send({ comment });
+    .then(comments => {
+      res.send({ comments });
     })
+
     .catch(next);
 };
 
 // PUT / api / comments /: comment_id Increment or Decrement the votes of a comment by one.This route requires a vote query of 'up' or 'down' e.g: https://nc-news-portfolio.herokuapp.com/api/comments/:comment_id?vote=down
 
 const voteComment = (req, res, next) => {
-  console.log('hit function');
   const { comment_id } = req.params;
   const { vote } = req.body;
   if (vote !== 'up' && vote !== 'down')
@@ -174,8 +174,10 @@ const deleteComment = (req, res, next) => {
   Comment.findByIdAndRemove({
     _id: comment_id
   })
-    .then(deleted => {
-      res.status(201).send(deleted);
+    .then(() => {
+      res.status(201).send({
+        message: `Comment Id ${comment_id} has been deleted`
+      });
     })
     .catch(next);
 };

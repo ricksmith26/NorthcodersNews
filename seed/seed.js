@@ -18,8 +18,6 @@ const seedDB = ({ topicData, articleData, commentData, usersData }) => {
   return mongoose.connection
     .dropDatabase()
     .then(() => {
-      // console.log(topicData, '<<<<<<<<<<<<topicData');
-      console.log('b4 insert');
       return Promise.all([
         Topic.insertMany(topicData),
         User.insertMany(usersData)
@@ -47,7 +45,6 @@ const seedDB = ({ topicData, articleData, commentData, usersData }) => {
         Comment.insertMany(changeCommentId(userRef, commentData, articleDocs))
       ]);
     })
-
     .catch(console.log);
 };
 

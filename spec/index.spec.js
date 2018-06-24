@@ -12,11 +12,9 @@ describe('/northcoders-news', () => {
   let topicDocs;
   let userDocs;
   beforeEach(() => {
-    return seedDB(rawData)
-      .then(docs => {
-        [articleDocs, topicDocs, userDocs, commentDocs] = docs;
-      })
-      .catch(console.log);
+    return seedDB(rawData).then(docs => {
+      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
+    });
   });
   describe('/api', () => {
     describe('/', () => {
@@ -68,26 +66,23 @@ describe('/northcoders-news', () => {
     });
   });
 });
-describe.only('/northcoders-news', () => {
+describe('/northcoders-news', () => {
   let articleDocs;
   let commentDocs;
   let topicDocs;
   let userDocs;
   beforeEach(() => {
-    return seedDB(rawData)
-      .then(docs => {
-        [articleDocs, topicDocs, userDocs, commentDocs] = docs;
-      })
-      .catch(console.log);
+    return seedDB(rawData).then(docs => {
+      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
+    });
   });
-  describe('/api/articles', () => {
-    describe('/', () => {
+  describe('GET REQUEST', () => {
+    describe('/api/articles', () => {
       it('GET responds with status 200 and returns all articles', () => {
         return request
           .get('/api/articles')
           .expect(200)
           .then(res => {
-            console.log(res.body, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<RESBOD');
             expect(res.body.articles.length).to.equal(4);
             expect(res.body.articles[0]).to.include.keys(
               'title',
@@ -100,14 +95,13 @@ describe.only('/northcoders-news', () => {
             );
           });
       });
-      describe('/api/articles/:article_id/comments', () => {
-        describe('/', () => {
+      describe('GET REQUEST', () => {
+        describe('/api/articles/:article_id/comments', () => {
           it('GET responds with status 200 and returns all comments for the requested article', () => {
             return request
               .get(`/api/articles/${articleDocs[0].id}/comments`)
               .expect(200)
               .then(res => {
-                console.log(articleDocs, '<<<<<<<<<<<<<<<<<<<<<<<<<<BODY');
                 expect(articleDocs.length).to.equal(4);
                 expect(res.body.comments[0]).to.include.keys(
                   'created_at',
@@ -120,8 +114,8 @@ describe.only('/northcoders-news', () => {
                 );
               });
           });
-          describe('/api/articles/:article_id/comments', () => {
-            describe('/', () => {
+          describe('POST REQUEST', () => {
+            describe('/api/articles/:article_id/comments', () => {
               it('POST adds a comment to the requested article', () => {
                 return request
                   .post(`/api/articles/${articleDocs[0]._id}/comments`)
@@ -132,33 +126,108 @@ describe.only('/northcoders-news', () => {
                   })
                   .expect(201)
                   .then(res => {
-                    expect(res.body.comment).to.include.keys(
+                    expect(res.body.comments).to.include.keys(
                       '_id',
                       'belongs_to',
                       'votes',
                       'body'
                     );
-                    expect(res.body.comment.body).to.equal(
+                    expect(res.body.comments.body).to.equal(
                       'This is the new comment test'
                     );
                   });
               });
-              describe('/', () => {
+              describe('/api/articles/:article_id/comments', () => {
                 it('PUT Increment or Decrement the votes of an article by one', () => {
                   return request
                     .put(`/api/articles/${articleDocs[0]._id}`)
-                    .send({
-                      vote: 'up'
-                    })
+                    .send({ vote: 'up' })
                     .expect(201)
                     .then(res => {
-                      expect(res.body.articles[0]).to.equal(1);
+                      expect(res.body.votes).to.equal(1);
                     });
                 });
               });
             });
           });
         });
+      });
+    });
+  });
+});
+describe('/northcoders-news', () => {
+  let articleDocs;
+  let commentDocs;
+  let topicDocs;
+  let userDocs;
+
+  beforeEach(() => {
+    return seedDB(rawData).then(docs => {
+      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
+    });
+  });
+  describe('/api/comments', () => {
+    describe('/api/comments', () => {
+      it('GET responds with status 200 and returns all comments', () => {
+        return request
+          .get('/api/comments')
+          .expect(200)
+          .then(res => {
+            expect(res.body.comments.length).to.equal(8);
+          });
+      });
+      describe('/api/comments/:comment_id', () => {
+        it('PUT Increment or Decrement the votes of a comment by one', () => {
+          return request
+            .put(`/api/comments/${commentDocs[0]._id}`)
+            .send({ vote: 'up' })
+            .expect(201)
+            .then(res => {
+              expect(res.body.voted.votes).to.equal(8);
+            });
+        });
+        describe('/', () => {
+          it('DELETE Deletes the requested comment and confirms with status 201 and a message', () => {
+            return request
+              .delete(`/api/comments/${articleDocs[0]._id}`)
+              .expect(201)
+              .then(res => {
+                expect(res.body).to.eql({
+                  message: `Comment Id ${articleDocs[0]._id} has been deleted`
+                });
+              });
+          });
+        });
+      });
+    });
+  });
+});
+describe.only('/northcoders-news', () => {
+  let articleDocs;
+  let commentDocs;
+  let topicDocs;
+  let userDocs;
+
+  beforeEach(() => {
+    return seedDB(rawData).then(docs => {
+      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
+    });
+  });
+  describe('GET REQUEST', () => {
+    describe('/api/users/:username', () => {
+      it('GET responds with status 200 and returns the requested user profile', () => {
+        return request
+          .get(`/api/users/butter_bridge`)
+          .expect(200)
+          .then(res => {
+            expect(res.body[0]).to.include.keys(
+              '_id',
+              'username',
+              'name',
+              'avatar_url',
+              '_v'
+            );
+          });
       });
     });
   });
