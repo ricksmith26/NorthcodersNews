@@ -17,104 +17,80 @@ describe('/northcoders-news', () => {
     });
   });
   describe('/api', () => {
-    describe('/', () => {
-      it('GET responds with status 200 and an object containing available endpoints', () => {
-        return request
-          .get('/api')
-          .expect(200)
-          .then(res => {
-            expect(res.body).to.eql({ status: 'ok' });
-          });
-      });
-      describe('/api/topics', () => {
-        describe('/', () => {
-          it('GET responds with status 200 and an object containing all topic data', () => {
-            return request
-              .get('/api/topics')
-              .expect(200)
-              .then(res => {
-                expect(res.body.topics[0]).to.include.keys(
-                  '_id',
-                  'title',
-                  'slug'
-                );
-                expect(res.body.topics[0].slug).to.equal('mitch');
-              });
-          });
-          describe('/api/topics/:topic/articles', () => {
-            describe('/', () => {
-              it('GET getArticleByTopic responds with status 200 and an object containing all topic data relating to the specific topic', () => {
-                return request
-                  .get('/api/topics/mitch/articles')
-                  .expect(200)
-                  .then(res => {
-                    expect(res.body.articles.length).to.equal(2);
-                    expect(res.body.articles[0]).to.include.keys(
-                      'title',
-                      'body',
-                      'belongs_to',
-                      'created_by'
-                    );
-                    expect(res.body.articles[0].belongs_to).to.equal('mitch');
-                    expect(res.body.articles[1].belongs_to).to.equal('mitch');
-                  });
-              });
-            });
-          });
+    it('GET responds with status 200 and an object containing available endpoints', () => {
+      return request
+        .get('/api')
+        .expect(200)
+        .then(res => {
+          expect(res.body).to.eql({ status: 'ok' });
         });
-      });
     });
-  });
-});
-describe('/northcoders-news', () => {
-  let articleDocs;
-  let commentDocs;
-  let topicDocs;
-  let userDocs;
-  beforeEach(() => {
-    return seedDB(rawData).then(docs => {
-      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
-    });
-  });
-  describe('GET REQUEST', () => {
-    describe('/api/articles', () => {
-      it('GET responds with status 200 and returns all articles', () => {
+    describe('/api/topics', () => {
+      it('GET responds with status 200 and an object containing all topic data', () => {
         return request
-          .get('/api/articles')
+          .get('/api/topics')
           .expect(200)
           .then(res => {
-            expect(res.body.articles.length).to.equal(4);
-            expect(res.body.articles[0]).to.include.keys(
-              'title',
-              'body',
-              'belongs_to',
-              'created_by',
-              'votes',
-              '_id',
-              '__v'
-            );
+            expect(res.body.topics[0]).to.include.keys('_id', 'title', 'slug');
+            expect(res.body.topics[0].slug).to.equal('mitch');
           });
       });
-      describe('GET REQUEST', () => {
-        describe('/api/articles/:article_id/comments', () => {
-          it('GET responds with status 200 and returns all comments for the requested article', () => {
+      describe('/api/topics/:topic/articles', () => {
+        it('GET getArticleByTopic responds with status 200 and an object containing all topic data relating to the specific topic', () => {
+          return request
+            .get('/api/topics/mitch/articles')
+            .expect(200)
+            .then(res => {
+              expect(res.body.articles.length).to.equal(2);
+              expect(res.body.articles[0]).to.include.keys(
+                'title',
+                'body',
+                'belongs_to',
+                'created_by'
+              );
+              expect(res.body.articles[0].belongs_to).to.equal('mitch');
+              expect(res.body.articles[1].belongs_to).to.equal('mitch');
+            });
+        });
+
+        describe('/api/articles', () => {
+          it('GET responds with status 200 and returns all articles', () => {
             return request
-              .get(`/api/articles/${articleDocs[0].id}/comments`)
+              .get('/api/articles')
               .expect(200)
               .then(res => {
-                expect(articleDocs.length).to.equal(4);
-                expect(res.body.comments[0]).to.include.keys(
-                  'created_at',
-                  '_id',
-                  '__v',
+                expect(res.body.articles.length).to.equal(4);
+                expect(res.body.articles[0]).to.include.keys(
+                  'title',
                   'body',
                   'belongs_to',
                   'created_by',
+                  'votes',
+                  '_id',
                   '__v'
                 );
               });
           });
-          describe('POST REQUEST', () => {
+
+          describe('/api/articles/:article_id/comments', () => {
+            it('GET responds with status 200 and returns all comments for the requested article', () => {
+              return request
+                .get(`/api/articles/${articleDocs[0].id}/comments`)
+                .expect(200)
+                .then(res => {
+                  expect(articleDocs.length).to.equal(4);
+                  expect(res.body.comments[0]).to.include.keys(
+                    'created_at',
+                    '_id',
+                    '__v',
+                    'body',
+                    'belongs_to',
+                    'created_by',
+                    '__v'
+                  );
+                });
+            });
+
             describe('/api/articles/:article_id/comments', () => {
               it('POST adds a comment to the requested article', () => {
                 return request
@@ -142,86 +118,62 @@ describe('/northcoders-news', () => {
                       expect(res.body.votes).to.equal(1);
                     });
                 });
-              });
-            });
-          });
-        });
-      });
-    });
-  });
-});
-describe('/northcoders-news', () => {
-  let articleDocs;
-  let commentDocs;
-  let topicDocs;
-  let userDocs;
 
-  beforeEach(() => {
-    return seedDB(rawData).then(docs => {
-      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
-    });
-  });
-  describe('/api/comments', () => {
-    describe('/api/comments', () => {
-      it('GET responds with status 200 and returns all comments', () => {
-        return request
-          .get('/api/comments')
-          .expect(200)
-          .then(res => {
-            expect(res.body.comments.length).to.equal(8);
-          });
-      });
-      describe('/api/comments/:comment_id', () => {
-        it('PUT Increment or Decrement the votes of a comment by one', () => {
-          return request
-            .put(`/api/comments/${commentDocs[0]._id}`)
-            .send({ vote: 'up' })
-            .expect(201)
-            .then(res => {
-              expect(res.body.voted.votes).to.equal(8);
-            });
-        });
-        describe('/', () => {
-          it('DELETE Deletes the requested comment and confirms with status 201 and a message', () => {
-            return request
-              .delete(`/api/comments/${articleDocs[0]._id}`)
-              .expect(201)
-              .then(res => {
-                expect(res.body).to.eql({
-                  message: `Comment Id ${articleDocs[0]._id} has been deleted`
+                describe('/api/comments', () => {
+                  it('GET responds with status 200 and returns all comments', () => {
+                    return request
+                      .get('/api/comments')
+                      .expect(200)
+                      .then(res => {
+                        expect(res.body.comments.length).to.equal(8);
+                      });
+                  });
+                  describe('/api/comments/:comment_id', () => {
+                    it('PUT Increment or Decrement the votes of a comment by one', () => {
+                      return request
+                        .put(`/api/comments/${commentDocs[0]._id}`)
+                        .send({ vote: 'up' })
+                        .expect(201)
+                        .then(res => {
+                          expect(res.body.voted.votes).to.equal(8);
+                        });
+                    });
+                    describe('/', () => {
+                      it('DELETE Deletes the requested comment and confirms with status 201 and a message', () => {
+                        return request
+                          .delete(`/api/comments/${articleDocs[0]._id}`)
+                          .expect(201)
+                          .then(res => {
+                            expect(res.body).to.eql({
+                              message: `Comment Id ${
+                                articleDocs[0]._id
+                              } has been deleted`
+                            });
+                          });
+                      });
+
+                      describe('/api/users/:username', () => {
+                        it('GET responds with status 200 and returns the requested user profile', () => {
+                          return request
+                            .get(`/api/users/butter_bridge`)
+                            .expect(200)
+                            .then(res => {
+                              expect(res.body[0]).to.include.keys(
+                                '_id',
+                                'username',
+                                'name',
+                                'avatar_url'
+                              );
+                            });
+                        });
+                      });
+                    });
+                  });
                 });
               });
+            });
           });
         });
-      });
-    });
-  });
-});
-describe('/northcoders-news', () => {
-  let articleDocs;
-  let commentDocs;
-  let topicDocs;
-  let userDocs;
-
-  beforeEach(() => {
-    return seedDB(rawData).then(docs => {
-      [articleDocs, topicDocs, userDocs, commentDocs] = docs;
-    });
-  });
-  describe('GET REQUEST', () => {
-    describe('/api/users/:username', () => {
-      it('GET responds with status 200 and returns the requested user profile', () => {
-        return request
-          .get(`/api/users/butter_bridge`)
-          .expect(200)
-          .then(res => {
-            expect(res.body[0]).to.include.keys(
-              '_id',
-              'username',
-              'name',
-              'avatar_url'
-            );
-          });
       });
     });
   });

@@ -4,7 +4,8 @@ const {
   getArticles,
   getCommentsByArticleId,
   addComment,
-  voteUpOrDown
+  voteUpOrDown,
+  getArticleById
 } = require('../controllers/topicController');
 
 articleRouter.route('/').get(getArticles);
@@ -14,6 +15,9 @@ articleRouter
   .get(getCommentsByArticleId)
   .post(addComment);
 
-articleRouter.route('/:article_id').put(voteUpOrDown);
+articleRouter
+  .route('/:article_id')
+  .put(voteUpOrDown)
+  .get(getArticleById);
 
 module.exports = articleRouter;
