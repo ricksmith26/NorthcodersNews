@@ -1,10 +1,10 @@
 const { Topic, Article, User, Comment } = require('../models');
 
-const getEndPoints = (req, res, next) => {
-  const result = { status: 'ok' };
-  // res.render('pages/apiList');
-  res.send(result);
-};
+// const getEndPoints = (req, res, next) => {
+//   const result = { status: 'ok' };
+//   // res.render('pages/apiList');
+//   res.send(result);
+// };
 
 //GET /api/topics Get all the topics
 
@@ -236,7 +236,7 @@ const getArticleById = (req, res, next) => {
 };
 
 module.exports = {
-  getEndPoints,
+  // getEndPoints,
   getTopics,
   getArticleByTopic,
   getArticles,

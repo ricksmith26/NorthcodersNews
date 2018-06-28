@@ -16,156 +16,146 @@ describe('/northcoders-news', () => {
       [articleDocs, topicDocs, userDocs, commentDocs] = docs;
     });
   });
-  describe('/api', () => {
-    it('GET responds with status 200 and an object containing available endpoints', () => {
+  describe('/api/topics', () => {
+    it('GET responds with status 200 and an object containing all topic data', () => {
       return request
-        .get('/api')
+        .get('/api/topics')
         .expect(200)
         .then(res => {
-          expect(res.body).to.eql({ status: 'ok' });
+          expect(res.body.topics[0]).to.include.keys('_id', 'title', 'slug');
+          expect(res.body.topics[0].slug).to.equal('mitch');
         });
     });
-    describe('/api/topics', () => {
-      it('GET responds with status 200 and an object containing all topic data', () => {
+    describe('/api/topics/:topic/articles', () => {
+      it('GET getArticleByTopic responds with status 200 and an object containing all topic data relating to the specific topic', () => {
         return request
-          .get('/api/topics')
+          .get('/api/topics/mitch/articles')
           .expect(200)
           .then(res => {
-            expect(res.body.topics[0]).to.include.keys('_id', 'title', 'slug');
-            expect(res.body.topics[0].slug).to.equal('mitch');
+            expect(res.body.articles.length).to.equal(2);
+            expect(res.body.articles[0]).to.include.keys(
+              'title',
+              'body',
+              'belongs_to',
+              'created_by'
+            );
+            expect(res.body.articles[0].belongs_to).to.equal('mitch');
+            expect(res.body.articles[1].belongs_to).to.equal('mitch');
           });
       });
-      describe('/api/topics/:topic/articles', () => {
-        it('GET getArticleByTopic responds with status 200 and an object containing all topic data relating to the specific topic', () => {
+
+      describe('/api/articles', () => {
+        it('GET responds with status 200 and returns all articles', () => {
           return request
-            .get('/api/topics/mitch/articles')
+            .get('/api/articles')
             .expect(200)
             .then(res => {
-              expect(res.body.articles.length).to.equal(2);
+              expect(res.body.articles.length).to.equal(4);
               expect(res.body.articles[0]).to.include.keys(
                 'title',
                 'body',
                 'belongs_to',
-                'created_by'
+                'created_by',
+                'votes',
+                '_id',
+                '__v'
               );
-              expect(res.body.articles[0].belongs_to).to.equal('mitch');
-              expect(res.body.articles[1].belongs_to).to.equal('mitch');
             });
         });
 
-        describe('/api/articles', () => {
-          it('GET responds with status 200 and returns all articles', () => {
+        describe('/api/articles/:article_id/comments', () => {
+          it('GET responds with status 200 and returns all comments for the requested article', () => {
             return request
-              .get('/api/articles')
+              .get(`/api/articles/${articleDocs[0].id}/comments`)
               .expect(200)
               .then(res => {
-                expect(res.body.articles.length).to.equal(4);
-                expect(res.body.articles[0]).to.include.keys(
-                  'title',
+                expect(articleDocs.length).to.equal(4);
+                expect(res.body.comments[0]).to.include.keys(
+                  'created_at',
+                  '_id',
+                  '__v',
                   'body',
                   'belongs_to',
                   'created_by',
-                  'votes',
-                  '_id',
                   '__v'
                 );
               });
           });
 
           describe('/api/articles/:article_id/comments', () => {
-            it('GET responds with status 200 and returns all comments for the requested article', () => {
+            it('POST adds a comment to the requested article', () => {
               return request
-                .get(`/api/articles/${articleDocs[0].id}/comments`)
-                .expect(200)
+                .post(`/api/articles/${articleDocs[0]._id}/comments`)
+                .send({
+                  body: 'This is the new comment test',
+                  belongs_to: 'Living in the shadow of a great man',
+                  created_by: 'butter_bridge'
+                })
+                .expect(201)
                 .then(res => {
-                  expect(articleDocs.length).to.equal(4);
-                  expect(res.body.comments[0]).to.include.keys(
-                    'created_at',
-                    '_id',
-                    '__v',
-                    'body',
-                    'belongs_to',
-                    'created_by',
-                    '__v'
+                  expect(res.body).to.include.keys('comment');
+                  expect(res.body.comment.body).to.equal(
+                    'This is the new comment test'
                   );
                 });
             });
-
             describe('/api/articles/:article_id/comments', () => {
-              it('POST adds a comment to the requested article', () => {
+              it('PUT Increment or Decrement the votes of an article by one', () => {
                 return request
-                  .post(`/api/articles/${articleDocs[0]._id}/comments`)
-                  .send({
-                    body: 'This is the new comment test',
-                    belongs_to: 'Living in the shadow of a great man',
-                    created_by: 'butter_bridge'
-                  })
+                  .put(`/api/articles/${articleDocs[0]._id}`)
+                  .send({ vote: 'up' })
                   .expect(201)
                   .then(res => {
-                    expect(res.body).to.include.keys('comment');
-                    expect(res.body.comment.body).to.equal(
-                      'This is the new comment test'
-                    );
+                    expect(res.body.votes).to.equal(1);
                   });
               });
-              describe('/api/articles/:article_id/comments', () => {
-                it('PUT Increment or Decrement the votes of an article by one', () => {
+
+              describe('/api/comments', () => {
+                it('GET responds with status 200 and returns all comments', () => {
                   return request
-                    .put(`/api/articles/${articleDocs[0]._id}`)
-                    .send({ vote: 'up' })
-                    .expect(201)
+                    .get('/api/comments')
+                    .expect(200)
                     .then(res => {
-                      expect(res.body.votes).to.equal(1);
+                      expect(res.body.comments.length).to.equal(8);
                     });
                 });
-
-                describe('/api/comments', () => {
-                  it('GET responds with status 200 and returns all comments', () => {
+                describe('/api/comments/:comment_id', () => {
+                  it('PUT Increment or Decrement the votes of a comment by one', () => {
                     return request
-                      .get('/api/comments')
-                      .expect(200)
+                      .put(`/api/comments/${commentDocs[0]._id}`)
+                      .send({ vote: 'up' })
+                      .expect(201)
                       .then(res => {
-                        expect(res.body.comments.length).to.equal(8);
+                        expect(res.body.voted.votes).to.equal(8);
                       });
                   });
-                  describe('/api/comments/:comment_id', () => {
-                    it('PUT Increment or Decrement the votes of a comment by one', () => {
+                  describe('/', () => {
+                    it('DELETE Deletes the requested comment and confirms with status 201 and a message', () => {
                       return request
-                        .put(`/api/comments/${commentDocs[0]._id}`)
-                        .send({ vote: 'up' })
+                        .delete(`/api/comments/${articleDocs[0]._id}`)
                         .expect(201)
                         .then(res => {
-                          expect(res.body.voted.votes).to.equal(8);
+                          expect(res.body).to.eql({
+                            message: `Comment Id ${
+                              articleDocs[0]._id
+                            } has been deleted`
+                          });
                         });
                     });
-                    describe('/', () => {
-                      it('DELETE Deletes the requested comment and confirms with status 201 and a message', () => {
-                        return request
-                          .delete(`/api/comments/${articleDocs[0]._id}`)
-                          .expect(201)
-                          .then(res => {
-                            expect(res.body).to.eql({
-                              message: `Comment Id ${
-                                articleDocs[0]._id
-                              } has been deleted`
-                            });
-                          });
-                      });
 
-                      describe('/api/users/:username', () => {
-                        it('GET responds with status 200 and returns the requested user profile', () => {
-                          return request
-                            .get(`/api/users/butter_bridge`)
-                            .expect(200)
-                            .then(res => {
-                              expect(res.body[0]).to.include.keys(
-                                '_id',
-                                'username',
-                                'name',
-                                'avatar_url'
-                              );
-                            });
-                        });
+                    describe('/api/users/:username', () => {
+                      it('GET responds with status 200 and returns the requested user profile', () => {
+                        return request
+                          .get(`/api/users/butter_bridge`)
+                          .expect(200)
+                          .then(res => {
+                            expect(res.body[0]).to.include.keys(
+                              '_id',
+                              'username',
+                              'name',
+                              'avatar_url'
+                            );
+                          });
                       });
                     });
                   });
