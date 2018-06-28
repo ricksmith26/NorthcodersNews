@@ -159,14 +159,12 @@ describe('/northcoders-news', () => {
                           });
                       });
                     });
-                    describe.only('/api/topics/:topic/articles', () => {
+                    describe('/api/topics/:topic/articles', () => {
                       it('GET ERRORS get articles by topic, responds with a specific message', () => {
                         return request
                           .get(`/api/topics/:topic/articles`)
                           .expect(404)
                           .then(res => {
-                            console.log(Object.keys(res), '<<<<<<<<<<,@@@@@@@');
-                            console.log(
                             expect(res.clientError).to.equal(true);
                             expect(res.notFound).to.equal(true);
                             expect(res.accepted).to.equal(false);
@@ -174,23 +172,36 @@ describe('/northcoders-news', () => {
                       });
                       //write this test
                       describe('/api/articles/:article_id/comments', () => {
-                        it('GET responds with status 200 and returns all comments for the requested article', () => {
+                        it('GET ERRORS get comments by article id, responds with a specific message', () => {
                           return request
-                            .get(`/api/articles/${articleDocs[0].id}/comments`)
-                            .expect(200)
+                            .get(`/api/articles/hiwvriunr56/comments`)
+                            .expect(404)
                             .then(res => {
-                              expect(articleDocs.length).to.equal(4);
-                              expect(res.body.comments[0]).to.include.keys(
-                                'created_at',
-                                '_id',
-                                '__v',
-                                'body',
-                                'belongs_to',
-                                'created_by',
-                                '__v'
+                              expect(res.body.message).of.equal(
+                                'Cast to ObjectId failed for value "hiwvriunr56" at path "belongs_to" for model "comments"'
                               );
                             });
                         });
+                        describe.only('/api/articles/:article_id/comments', () => {
+                          it('POST adds a comment to the requested article', () => {
+                            return request
+                              .post(`/api/articles/sjivsdds56/comments`)
+                              .send({
+                                body: 'This is the new comment test',
+                                belongs_to:
+                                  'Living in the shadow of a great man',
+                                created_by: 'butter_bridge'
+                              })
+                              .expect(500)
+                              .then(res => {
+                                console.log(res.clientError);
+                                expect(res.body.message).of.equal(
+                                  'Cast to ObjectId failed for value "sjivsdds56" at path "belongs_to" for model "comments"'
+                                );
+                              });
+                          });
+                        });
+                      });
                     });
                   });
                 });
@@ -202,5 +213,3 @@ describe('/northcoders-news', () => {
     });
   });
 });
-});
-

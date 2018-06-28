@@ -27,10 +27,12 @@ const getArticles = (req, res, next) => {
 //GET /api/articles/:article_id/comments Get all the comments for a individual article
 
 const getCommentsByArticleId = (req, res, next) => {
+  console.log(req.params);
   const { article_id } = req.params;
 
   Comment.find({ belongs_to: article_id })
     .then(comments => {
+      console.log(comments);
       res.send({ comments });
     })
     .catch(next);
