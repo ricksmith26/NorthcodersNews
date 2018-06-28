@@ -58,6 +58,7 @@ describe('/northcoders-news', () => {
                 'created_by',
                 'votes',
                 '_id',
+                'comments',
                 '__v'
               );
             });
@@ -158,6 +159,39 @@ describe('/northcoders-news', () => {
                           });
                       });
                     });
+                    describe.only('/api/topics/:topic/articles', () => {
+                      it('GET ERRORS get articles by topic, responds with a specific message', () => {
+                        return request
+                          .get(`/api/topics/:topic/articles`)
+                          .expect(404)
+                          .then(res => {
+                            console.log(Object.keys(res), '<<<<<<<<<<,@@@@@@@');
+                            console.log(
+                            expect(res.clientError).to.equal(true);
+                            expect(res.notFound).to.equal(true);
+                            expect(res.accepted).to.equal(false);
+                          });
+                      });
+                      //write this test
+                      describe('/api/articles/:article_id/comments', () => {
+                        it('GET responds with status 200 and returns all comments for the requested article', () => {
+                          return request
+                            .get(`/api/articles/${articleDocs[0].id}/comments`)
+                            .expect(200)
+                            .then(res => {
+                              expect(articleDocs.length).to.equal(4);
+                              expect(res.body.comments[0]).to.include.keys(
+                                'created_at',
+                                '_id',
+                                '__v',
+                                'body',
+                                'belongs_to',
+                                'created_by',
+                                '__v'
+                              );
+                            });
+                        });
+                    });
                   });
                 });
               });
@@ -168,3 +202,5 @@ describe('/northcoders-news', () => {
     });
   });
 });
+});
+
