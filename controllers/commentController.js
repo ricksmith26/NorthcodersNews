@@ -18,7 +18,7 @@ const voteComment = (req, res, next) => {
   const { vote } = req.body;
   if (vote !== 'up' && vote !== 'down')
     return next({
-      status: 200,
+      status: 404,
       message: 'Query error! Vote must be up or down'
     });
   let voteReq = 0;

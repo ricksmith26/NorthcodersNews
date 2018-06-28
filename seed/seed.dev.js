@@ -3,11 +3,10 @@ const mongoose = require('mongoose');
 //const rawData = require('./devData');
 const { DB_URL } = require('../config');
 const rawData = require('./devData/index');
-console.log(DB_URL);
+
 mongoose
   .connect(DB_URL)
   .then(() => {
-    console.log('b4 run seed');
     return seedDB(rawData);
   })
   .then(() => {

@@ -27,12 +27,10 @@ const getArticles = (req, res, next) => {
 //GET /api/articles/:article_id/comments Get all the comments for a individual article
 
 const getCommentsByArticleId = (req, res, next) => {
-  console.log(req.params);
   const { article_id } = req.params;
 
   Comment.find({ belongs_to: article_id })
     .then(comments => {
-      console.log(comments);
       res.send({ comments });
     })
     .catch(next);
@@ -72,7 +70,7 @@ const voteUpOrDown = (req, res, next) => {
   const { vote } = req.body;
   if (vote !== 'up' && vote !== 'down')
     return next({
-      status: 200,
+      status: 404,
       message: 'Query error! Vote must be either up or down'
     });
 
@@ -95,17 +93,16 @@ const voteUpOrDown = (req, res, next) => {
 
 const getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  console.log(article_id);
+
   Promise.all([Article.find({ _id: article_id }), User.find().lean()])
     .then(([articleDoc, users]) => {
-      console.log(articleDoc);
       const userObj = users.reduce((acc, user) => {
         if (acc[user._id] === undefined) {
           acc[user._id] = user.username;
           return acc;
         }
       }, {});
-      console.log(commentCount);
+
       const article = {
         ...articleDoc,
         comments: commentCount[articleDoc[0].title],
