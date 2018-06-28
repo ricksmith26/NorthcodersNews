@@ -4,7 +4,7 @@ const {
   topicData,
   usersData
 } = require('../seed/devData/index');
-const seedDB = require('../seed/seed');
+
 const DB_URL = require('../config/index');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -63,20 +63,20 @@ const changeCommentId = (userRef, commentData, articleDocs) => {
   return result;
 };
 
-const commentCount = commentData.reduce((acc, val) => {
-  if (acc[val.belongs_to] !== undefined) {
-    acc[val.belongs_to]++;
-  } else {
-    acc[val.belongs_to] = 1;
-  }
-  return acc;
-}, {});
+const commentCount = comments =>
+  comments.reduce((acc, val) => {
+    if (acc[val.belongs_to] !== undefined) {
+      acc[val.belongs_to]++;
+    } else {
+      acc[val.belongs_to] = 1;
+    }
+    return acc;
+  }, {});
 
 module.exports = {
   changeArticleTopicId,
   createUserOb,
   changeCommentId,
   createArticleOb,
-  createUserOb,
   commentCount
 };

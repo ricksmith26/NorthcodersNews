@@ -6,12 +6,13 @@ const {
   topicData,
   usersData
 } = require('./devData/index');
+
 const {
   changeArticleTopicId,
   createUserOb,
   changeCommentId,
   createArticleOb
-} = require('../utils/index');
+} = require('../utils');
 
 const seedDB = ({ topicData, articleData, commentData, usersData }) => {
   let articleDocs;
@@ -26,7 +27,7 @@ const seedDB = ({ topicData, articleData, commentData, usersData }) => {
 
     .then(([topicDocs, userDocs]) => {
       const userRef = createUserOb(userDocs);
-      // console.log(userRef, '+++++++++++=');
+
       return Promise.all([
         Article.insertMany(
           changeArticleTopicId(topicDocs, articleData, userRef)

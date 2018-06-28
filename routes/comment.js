@@ -4,7 +4,7 @@ const {
   voteComment,
   getComments,
   deleteComment
-} = require('../controllers/topicController');
+} = require('../controllers/commentController');
 
 commentRouter.route('/').get(getComments);
 

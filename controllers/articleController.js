@@ -1,52 +1,25 @@
-const { Article, User, Comment } = require('../models');
+const { Topic, Article, User, Comment } = require('../models');
 const { commentCount } = require('../utils/index');
 
 //GET /api/articles Return all the articles
 
 const getArticles = (req, res, next) => {
-  Promise.all([User.find(), Article.find().lean()])
-    .then(([users, articles]) => {
-      const userObj = users.reduce((acc, user) => {
-        if (acc[user._id] === undefined) {
-          acc[user._id] = user.username;
+  Promise.all([Comment.find(), User.find(), Article.find().lean()])
+    .then(([comments, users, articles]) => {
+      const userOb = users.reduce(function(acc, val) {
+        if (acc[val.id] === undefined) {
+          acc[val.id] = val.username;
           return acc;
         }
       }, {});
-      articles = articles.map(article => {
-        console.log();
+      const Finalresult = articles.map(article => {
         return {
           ...article,
-          comments: commentCount[article.title],
-          created_by: userObj[article.created_by]
+          comments: commentCount(comments)[article._id],
+          created_by: userOb[article.created_by]
         };
       });
-      res.status(200).send({ articles });
-    })
-    .catch(next);
-};
-
-//GET api/articles/:article_id get the required article in the corrent format
-
-const getArticleById = (req, res, next) => {
-  const { article_id } = req.params;
-  console.log(article_id);
-  Promise.all([Article.find({ _id: article_id }), User.find().lean()])
-    .then(([articleDoc, users]) => {
-      console.log(articleDoc);
-      const userObj = users.reduce((acc, user) => {
-        if (acc[user._id] === undefined) {
-          acc[user._id] = user.username;
-          return acc;
-        }
-      }, {});
-      console.log(commentCount);
-      const article = {
-        ...articleDoc,
-        comments: commentCount[articleDoc[0].title],
-        created_by: userObj[articleDoc.created_by]
-      };
-
-      res.send({ article });
+      res.status(200).send({ articles: Finalresult });
     })
     .catch(next);
 };
@@ -118,10 +91,35 @@ const voteUpOrDown = (req, res, next) => {
     .catch(next);
 };
 
+const getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  console.log(article_id);
+  Promise.all([Article.find({ _id: article_id }), User.find().lean()])
+    .then(([articleDoc, users]) => {
+      console.log(articleDoc);
+      const userObj = users.reduce((acc, user) => {
+        if (acc[user._id] === undefined) {
+          acc[user._id] = user.username;
+          return acc;
+        }
+      }, {});
+      console.log(commentCount);
+      const article = {
+        ...articleDoc,
+        comments: commentCount[articleDoc[0].title],
+        created_by: userObj[articleDoc.created_by]
+      };
+
+      res.send({ article });
+    })
+    .catch(next);
+};
+
 module.exports = {
   getArticles,
   getCommentsByArticleId,
-  voteUpOrDown,
   addComment,
+  voteUpOrDown,
+
   getArticleById
 };

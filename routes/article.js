@@ -6,7 +6,7 @@ const {
   addComment,
   voteUpOrDown,
   getArticleById
-} = require('../controllers/topicController');
+} = require('../controllers/articleController');
 
 articleRouter.route('/').get(getArticles);
 
