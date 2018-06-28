@@ -63,9 +63,20 @@ const changeCommentId = (userRef, commentData, articleDocs) => {
   return result;
 };
 
+const commentCount = commentData.reduce((acc, val) => {
+  if (acc[val.belongs_to] !== undefined) {
+    acc[val.belongs_to]++;
+  } else {
+    acc[val.belongs_to] = 1;
+  }
+  return acc;
+}, {});
+
 module.exports = {
   changeArticleTopicId,
   createUserOb,
   changeCommentId,
-  createArticleOb
+  createArticleOb,
+  createUserOb,
+  commentCount
 };

@@ -194,6 +194,47 @@ const getUserProfile = (req, res, next) => {
     .catch(next);
 };
 
+const addNewArticleToTopic = (req, res, next) => {
+  const { topic_name } = req.params;
+  const { title, body, created_by } = req.body;
+  const article = new Article({
+    title,
+    body,
+    created_by,
+    belongs_to: topic_name
+  });
+  article
+    .save()
+    .then(article => {
+      res.status(201).send({ article });
+    })
+    .catch(next);
+};
+
+const getArticleById = (req, res, next) => {
+  const { article_id } = req.params;
+  console.log(article_id);
+  Promise.all([Article.find({ _id: article_id }), User.find().lean()])
+    .then(([articleDoc, users]) => {
+      console.log(articleDoc);
+      const userObj = users.reduce((acc, user) => {
+        if (acc[user._id] === undefined) {
+          acc[user._id] = user.username;
+          return acc;
+        }
+      }, {});
+      console.log(commentCount);
+      const article = {
+        ...articleDoc,
+        comments: commentCount[articleDoc[0].title],
+        created_by: userObj[articleDoc.created_by]
+      };
+
+      res.send({ article });
+    })
+    .catch(next);
+};
+
 module.exports = {
   getEndPoints,
   getTopics,
@@ -205,5 +246,7 @@ module.exports = {
   voteComment,
   getComments,
   deleteComment,
-  getUserProfile
+  getUserProfile,
+  addNewArticleToTopic,
+  getArticleById
 };
