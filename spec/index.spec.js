@@ -62,6 +62,9 @@ describe('/northcoders-news', () => {
             'comments',
             '__v'
           );
+          expect(res.body.articles[0].title).to.equal(
+            'Living in the shadow of a great man'
+          );
         });
     });
 
@@ -80,6 +83,9 @@ describe('/northcoders-news', () => {
               'belongs_to',
               'created_by',
               '__v'
+            );
+            expect(res.body.comments[0].body).to.equal(
+              'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — on you it works.'
             );
           });
       });
