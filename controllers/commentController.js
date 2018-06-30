@@ -1,4 +1,4 @@
-const { Topic, Article, User, Comment } = require('../models');
+const { Comment } = require('../models');
 
 //I added this so i could easily get the comments id's
 

@@ -4,10 +4,8 @@ const {
   topicData,
   usersData
 } = require('../seed/devData/index');
-const getArticles = require('../controllers/articleController');
-const DB_URL = require('../config/index');
-const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+
+//createUserOb to create object for seeding
 
 const createUserOb = usersDocs => {
   return usersDocs.reduce(function(acc, val) {
@@ -16,6 +14,8 @@ const createUserOb = usersDocs => {
   }, {});
 };
 
+//userOb for getArticles
+
 const userOb = users =>
   users.reduce(function(acc, val) {
     if (acc[val.id] === undefined) {
@@ -23,6 +23,21 @@ const userOb = users =>
       return acc;
     }
   }, {});
+
+//commentCount for getArticles
+
+const commentCount = comments =>
+  comments.reduce((acc, val) => {
+    if (acc[val.belongs_to] !== undefined) {
+      acc[val.belongs_to]++;
+    } else {
+      acc[val.belongs_to] = 1;
+    }
+    return acc;
+  }, {});
+
+//changeArticleTopicId for seedinng
+
 const changeArticleTopicId = (topicDocs, articleData, userRef) => {
   let result = [];
 
@@ -34,17 +49,18 @@ const changeArticleTopicId = (topicDocs, articleData, userRef) => {
           body: articleData[i].body,
           topic: topicDocs[j].id,
           created_by: userRef[articleData[i].created_by].id,
-          belongs_to: topicDocs[j].slug,
-          votes: articleData[i].votes
+          belongs_to: topicDocs[j].slug
         };
 
         result.push(art);
       }
     }
   }
-
   return result;
 };
+
+//createArticleOb for seeding
+
 const createArticleOb = articleData => {
   return articleData.reduce(function(acc, val) {
     acc[val.title] = val.id;
@@ -52,33 +68,20 @@ const createArticleOb = articleData => {
   }, {});
 };
 
+//changeCommentId for seeding
+
 const changeCommentId = (userRef, commentData, articleDocs) => {
-  let result = [];
-
-  for (let i = 0; i < commentData.length; i++) {
-    const com = {
-      body: commentData[i].body,
-      belongs_to: createArticleOb(articleDocs)[commentData[i].belongs_to],
-      created_at: commentData[i].created_at,
-      votes: commentData[i].votes,
-      created_by: userRef[commentData[i].created_by].id
-    };
-
-    result.push(com);
-  }
-
-  return result;
-};
-
-const commentCount = comments =>
-  comments.reduce((acc, val) => {
-    if (acc[val.belongs_to] !== undefined) {
-      acc[val.belongs_to]++;
-    } else {
-      acc[val.belongs_to] = 1;
-    }
+  return commentData.reduce(function(acc, comment) {
+    acc.push({
+      body: comment.body,
+      belongs_to: createArticleOb(articleDocs)[comment.belongs_to],
+      created_at: comment.created_at,
+      votes: comment.votes,
+      created_by: userRef[comment.created_by].id
+    });
     return acc;
-  }, {});
+  }, []);
+};
 
 module.exports = {
   changeArticleTopicId,

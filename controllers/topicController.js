@@ -1,4 +1,4 @@
-const { Topic, Article, User, Comment } = require('../models');
+const { Topic, Article } = require('../models');
 
 const getTopics = (req, res, next) => {
   Topic.find()

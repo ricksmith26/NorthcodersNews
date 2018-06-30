@@ -10,12 +10,10 @@ const {
 const {
   changeArticleTopicId,
   createUserOb,
-  changeCommentId,
-  createArticleOb
+  changeCommentId
 } = require('../utils');
 
 const seedDB = ({ topicData, articleData, commentData, usersData }) => {
-  let articleDocs;
   return mongoose.connection
     .dropDatabase()
     .then(() => {
@@ -46,6 +44,7 @@ const seedDB = ({ topicData, articleData, commentData, usersData }) => {
         Comment.insertMany(changeCommentId(userRef, commentData, articleDocs))
       ]);
     })
+
     .catch(console.log);
 };
 
