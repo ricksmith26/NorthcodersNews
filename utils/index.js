@@ -4,7 +4,7 @@ const {
   topicData,
   usersData
 } = require('../seed/devData/index');
-
+const getArticles = require('../controllers/articleController');
 const DB_URL = require('../config/index');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -16,6 +16,13 @@ const createUserOb = usersDocs => {
   }, {});
 };
 
+const userOb = users =>
+  users.reduce(function(acc, val) {
+    if (acc[val.id] === undefined) {
+      acc[val.id] = val.username;
+      return acc;
+    }
+  }, {});
 const changeArticleTopicId = (topicDocs, articleData, userRef) => {
   let result = [];
 
@@ -78,5 +85,6 @@ module.exports = {
   createUserOb,
   changeCommentId,
   createArticleOb,
-  commentCount
+  commentCount,
+  userOb
 };

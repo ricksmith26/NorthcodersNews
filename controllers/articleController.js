@@ -1,24 +1,19 @@
 const { Topic, Article, User, Comment } = require('../models');
-const { commentCount } = require('../utils/index');
+const { commentCount, createUserOb, userOb } = require('../utils/index');
 
 //GET /api/articles Return all the articles
 
 const getArticles = (req, res, next) => {
   Promise.all([Comment.find(), User.find(), Article.find().lean()])
     .then(([comments, users, articles]) => {
-      const userOb = users.reduce(function(acc, val) {
-        if (acc[val.id] === undefined) {
-          acc[val.id] = val.username;
-          return acc;
-        }
-      }, {});
       const Finalresult = articles.map(article => {
         return {
           ...article,
           comments: commentCount(comments)[article._id],
-          created_by: userOb[article.created_by]
+          created_by: userOb(users)[article.created_by]
         };
       });
+      console.log();
       res.status(200).send({ articles: Finalresult });
     })
     .catch(next);
