@@ -1,14 +1,24 @@
-# Northcoder News
+#Northcoders-News
 
-In this project I will expore the use of mongodb in the making of a Northcoders news api, users will be able to complete various GET, PUT, POST and DELETE functions on a range of 4 schemas.
+Getting Started
 
-## Getting Started
+Follow these instructions to get your a copy of the project up and running on your computer for development and testing purposes.
 
-After making a parent folder git clone the following link: https://github.com/ricksmith26/BE-FT-northcoders-news.git
+#Installing
+
+1.  Fork this repo to your own gitHub account
+
+2.  Git clone (url of your fork) in the terminal.
+
+3.  install prerequistites - see below
+
+4.  set up config files - see config section below
+
+5.  to test installation, open two terminal windows. in the first, run mongod in the second, run npm seed:dev. This will seed your dev database..
 
 ### Prerequisites
 
-Install express, mongod and nodemon to run on your computer.
+Install express, mongod, mongoose and nodemon to run on your computer.
 
 ### Installing
 

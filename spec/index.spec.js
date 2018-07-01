@@ -126,6 +126,9 @@ describe('/northcoders-news', () => {
           .get('/api/comments')
           .expect(200)
           .then(res => {
+            expect(res.body.comments[0].body).to.equal(
+              'Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — on you it works.'
+            );
             expect(res.body.comments.length).to.equal(8);
           });
       });
@@ -152,108 +155,108 @@ describe('/northcoders-news', () => {
           });
         });
       });
-      describe('GET /api/users/:username', () => {
-        it('GET responds with status 200 and returns the requested user profile', () => {
-          return request
-            .get(`/api/users/butter_bridge`)
-            .expect(200)
-            .then(res => {
-              expect(res.body[0]).to.include.keys(
-                '_id',
-                'username',
-                'name',
-                'avatar_url'
-              );
-            });
-        });
-      });
     });
 
-    describe('GET /api/topics/:topic/articles', () => {
-      it('GET ERRORS get articles by topic, responds with a specific message', () => {
+    describe('GET /api/users/:username', () => {
+      it('GET responds with status 200 and returns the requested user profile', () => {
         return request
-          .get(`/api/topics/:topic/articles`)
-          .expect(404)
+          .get(`/api/users/butter_bridge`)
+          .expect(200)
           .then(res => {
-            expect(res.clientError).to.equal(true);
-            expect(res.notFound).to.equal(true);
-            expect(res.accepted).to.equal(false);
+            expect(res.body[0].username).to.equal('butter_bridge');
+            expect(res.body[0]).to.include.keys(
+              '_id',
+              'username',
+              'name',
+              'avatar_url'
+            );
           });
       });
+    });
+  });
 
-      describe('GET /api/articles/:article_id/comments', () => {
-        it('GET ERRORS get comments by article id, responds with a specific message', () => {
+  describe('GET ERRORS /api/topics/:topic/articles', () => {
+    it('GET ERRORS get articles by topic, responds with a specific message', () => {
+      return request
+        .get(`/api/topics/:topic/articles`)
+        .expect(404)
+        .then(res => {
+          expect(res.clientError).to.equal(true);
+          expect(res.notFound).to.equal(true);
+          expect(res.accepted).to.equal(false);
+        });
+    });
+
+    describe('GET ERRORS /api/articles/:article_id/comments', () => {
+      it('GET ERRORS get comments by article id, responds with a specific message', () => {
+        return request
+          .get(`/api/articles/hiwvriunr56/comments`)
+          .expect(404)
+          .then(res => {
+            expect(res.body.message).of.equal(
+              'Cast to ObjectId failed for value "hiwvriunr56" at path "belongs_to" for model "comments"'
+            );
+          });
+      });
+      describe('POST ERRORS /api/articles/:article_id/comments', () => {
+        it('POST ERROR  adds a comment to the requested article, return the correct specific error', () => {
           return request
-            .get(`/api/articles/hiwvriunr56/comments`)
+            .post(`/api/articles/sjivsdds56/comments`)
+            .send({
+              body: 'This is the new comment test',
+              belongs_to: 'Living in the shadow of a great man',
+              created_by: 'butter_bridge'
+            })
             .expect(404)
             .then(res => {
               expect(res.body.message).of.equal(
-                'Cast to ObjectId failed for value "hiwvriunr56" at path "belongs_to" for model "comments"'
+                'comments validation failed: belongs_to: Cast to ObjectID failed for value "Living in the shadow of a great man" at path "belongs_to", created_by: Cast to ObjectID failed for value "butter_bridge" at path "created_by"'
               );
             });
         });
-        describe('POST /api/articles/:article_id/comments', () => {
-          it('POST ERROR  adds a comment to the requested article, return the correct specific error', () => {
+        describe('PUT ERRORS /api/articles/:article_id/comments', () => {
+          it('PUT ERROR Increment or Decrement the votes of an article by one, returns the correct error', () => {
             return request
-              .post(`/api/articles/sjivsdds56/comments`)
-              .send({
-                body: 'This is the new comment test',
-                belongs_to: 'Living in the shadow of a great man',
-                created_by: 'butter_bridge'
-              })
+              .put(`/api/articles/${articleDocs[0]._id}`)
+              .send({ vote: 'no' })
               .expect(404)
               .then(res => {
-                expect(res.body.message).of.equal(
-                  'comments validation failed: belongs_to: Cast to ObjectID failed for value "Living in the shadow of a great man" at path "belongs_to", created_by: Cast to ObjectID failed for value "butter_bridge" at path "created_by"'
+                expect(res.body.message).to.eql(
+                  'Query error! Vote must be either up or down'
                 );
               });
           });
-          describe('PUT /api/articles/:article_id/comments', () => {
-            it('PUT ERROR Increment or Decrement the votes of an article by one, returns the correct error', () => {
+          describe('PUT ERRORS /api/comments/:comment_id', () => {
+            it('PUT ERROR Increment or Decrement the votes of a comment by one, returns the correct error message', () => {
               return request
-                .put(`/api/articles/${articleDocs[0]._id}`)
-                .send({ vote: 'no' })
+                .put(`/api/comments/acauaiuinauN`)
+                .send({ vote: 'YES' })
                 .expect(404)
                 .then(res => {
-                  expect(res.body.message).to.eql(
-                    'Query error! Vote must be either up or down'
+                  expect(res.body.message).to.equal(
+                    'Query error! Vote must be up or down'
                   );
                 });
             });
-            describe('PUT /api/comments/:comment_id', () => {
-              it('PUT ERROR Increment or Decrement the votes of a comment by one, returns the correct error message', () => {
+            describe('DELETE ERRORS /api/comments/:article_id', () => {
+              it('DELETE  ERROR Deletes the requested comment, returns a bespoke error message', () => {
                 return request
-                  .put(`/api/comments/acauaiuinauN`)
-                  .send({
-                    vote: 'YES'
-                  })
+                  .delete(`/api/comments/5a515ef511f1zf`)
                   .expect(404)
                   .then(res => {
-                    expect(res.body.message).to.equal(
-                      'Query error! Vote must be up or down'
+                    expect(res.body.message).to.eql(
+                      'Cast to ObjectId failed for value "{ _id: \'5a515ef511f1zf\' }" at path "_id" for model "comments"'
                     );
                   });
               });
-              describe('DELETE /api/comments/:article_id', () => {
-                it('DELETE  ERROR Deletes the requested comment, returns a bespoke error message', () => {
+              describe('GET ERRORS /api/users/:username', () => {
+                it('GET responds with status 200 and returns the requested user profile', () => {
                   return request
-                    .delete(`/api/comments/5a515ef511f1zf`)
+                    .get(`/api/users/cunqc59c59w`)
                     .expect(404)
                     .then(res => {
-                      expect(res.body.message).to.eql(
-                        'Cast to ObjectId failed for value "{ _id: \'5a515ef511f1zf\' }" at path "_id" for model "comments"'
-                      );
+                      expect(res.body.message).to.eql('Incorrect username');
                     });
-                });
-                describe('GET /api/users/:username', () => {
-                  it('GET responds with status 200 and returns the requested user profile', () => {
-                    return request
-                      .get(`/api/users/cunqc59c59w`)
-                      .expect(404)
-                      .then(res => {
-                        expect(res.body.message).to.eql('Incorrect username');
-                      });
-                  });
                 });
               });
             });

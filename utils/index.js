@@ -39,24 +39,22 @@ const commentCount = comments =>
 //changeArticleTopicId for seedinng
 
 const changeArticleTopicId = (topicDocs, articleData, userRef) => {
-  let result = [];
-
-  for (let i = 0; i < articleData.length; i++) {
-    for (let j = 0; j < topicDocs.length; j++) {
-      if (articleData[i].topic === topicDocs[j].slug) {
+  return articleData.reduce(function(acc, article) {
+    for (let i = 0; i < topicDocs.length; i++) {
+      if (article.topic === topicDocs[i].slug) {
         const art = {
-          title: articleData[i].title,
-          body: articleData[i].body,
-          topic: topicDocs[j].id,
-          created_by: userRef[articleData[i].created_by].id,
-          belongs_to: topicDocs[j].slug
+          title: article.title,
+          body: article.body,
+          topic: topicDocs[i].id,
+          created_by: userRef[article.created_by].id,
+          belongs_to: topicDocs[i].slug
         };
 
-        result.push(art);
+        acc.push(art);
       }
     }
-  }
-  return result;
+    return acc;
+  }, []);
 };
 
 //createArticleOb for seeding
