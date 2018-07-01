@@ -20,15 +20,13 @@ Follow these instructions to get your a copy of the project up and running on yo
 
 Install express, mongod, mongoose and nodemon to run on your computer.
 
-### Installing
-
-Once git has been downloaded and dependacies have been installed open 2 command line windows in the northcoders news directory and run mongod in one and type npm run dev in the other. Once connected you can try out the below commands following localhost:9090/ in your browser or postmand
-
 ## Running the tests
 
 Simply type npm test in your command line to start the tests.
 
-### All below endpoints tests check the results to make sure they match http://northcoders-news-api.herokuapp.com/.
+## Once git has been downloaded and dependacies have been installed open 2 command line windows in the northcoders news directory and run mongod in one and type npm run dev in the other. Once connected you can try out the below commands following localhost:9090/ in your browser or postman
+
+## All below endpoints tests check the results to make sure they match http://northcoders-news-api.herokuapp.com/.
 
 Give an example
 
